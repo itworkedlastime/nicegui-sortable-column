@@ -4,6 +4,8 @@ from nicegui import ui
 
 class SortableColumn(ui.element, component='sortable_column.js'):
 
+    sortable_list = {}
+
     def __init__(self, *, on_change: Optional[Callable] = None, group:str = None) -> None:
         super().__init__()
         self.on('item-drop', self.drop)
@@ -11,47 +13,13 @@ class SortableColumn(ui.element, component='sortable_column.js'):
 
         self._classes.append('nicegui-column')
         self._props['group'] = group
+        SortableColumn.sortable_list[self.id] = self
 
     def drop(self, e) -> None:
         if self.on_change:
-            self.on_change(e)
+            self.on_change(e.args['new_index'],e.args['old_index'],SortableColumn.sortable_list[e.args['new_list']],SortableColumn.sortable_list[e.args['old_list']])
         else:
-            print(e)
+            print(e.args)
 
     def makeSortable(self) -> None:
         self.run_method('makeSortable')
-
-    def getitems(self) -> None:
-        return self.run_method('getitems')
-
-
-
-def on_change(e):
-    print(e)
-
-def refresh():
-    draw.refresh()
-
-
-@ui.refreshable
-def draw():
-    ui.button('reset').on_click(refresh)
-    with ui.row():
-        with ui.column():
-            with SortableColumn(on_change=on_change,group='test') as c1:
-                for i in range(10):
-                    with ui.card():
-                        ui.label(f"Card {i}")
-            ui.label(c1.id)
-
-        with ui.column():
-            with SortableColumn(on_change=on_change,group='test') as c2:
-                for i in range(10):
-                    with ui.card():
-                        ui.label(f"Card {i*10}")
-            ui.label(c2.id)
-
-draw()
-
-
-ui.run()
