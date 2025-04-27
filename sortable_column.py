@@ -22,4 +22,4 @@ class SortableColumn(ui.element, component='sortable_column.js'):
             print(e.args)
 
     def makeSortable(self) -> None:
-        self.run_method('makeSortable')
+        self.run_method('makesortable')
